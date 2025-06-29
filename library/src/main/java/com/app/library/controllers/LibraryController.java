@@ -29,12 +29,34 @@ public class LibraryController {
     // ==================== Book Endpoints ====================
 
     // Get all books
+    // @GetMapping("/books")
+    // public ResponseEntity<Collection<Book>> getAllBooks() {
+    //     Collection<Book> books = libraryService.getAllBooks();
+    //     logger.info("The list of books returned"+books);
+    //     return new ResponseEntity<>(books, HttpStatus.OK);
+    // }
+
     @GetMapping("/books")
-    public ResponseEntity<Collection<Book>> getAllBooks() {
-        Collection<Book> books = libraryService.getAllBooks();
-        logger.info("The list of books returned"+books);
-        return new ResponseEntity<>(books, HttpStatus.OK);
+    public ResponseEntity<Collection<Book>> getBooks(
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String genre) {
+        if (author!=null &&  genre!=null) {
+            Collection<Book> books = libraryService.getBooksByAuthorAndGenre(author, genre);
+            logger.info("The books retrieved for the author and genre "+author+" - " + genre);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } else if (author!=null) {
+            Collection<Book> books = libraryService.getBooksByAuthorAndGenre(author, null);
+            logger.info("The books retrieved for the author "+author);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } else {
+            Collection<Book> books = libraryService.getAllBooks();
+            logger.info("All the books retrieved");
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }
     }
+    
+
+
 
     // Get a book by ID
     @GetMapping("/books/{id}")
