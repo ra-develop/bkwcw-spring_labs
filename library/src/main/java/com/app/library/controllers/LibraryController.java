@@ -161,4 +161,41 @@ public class LibraryController {
         logger.info("The book has been retrieved "+recordId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+        @GetMapping("/books/genre")
+    public ResponseEntity<Collection<Book>> getBooksByGenre(
+            @RequestParam String genre) {
+        Collection<Book> books = libraryService.getBooksByGenre(genre);
+        logger.info("The books retrieved for genre "+genre);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/books/author/{author}")
+    public ResponseEntity<Collection<Book>> checkGenreForAuthor(
+            @PathVariable String author,
+            @RequestParam(required = false) String genre) {
+
+        Collection<Book> books = libraryService.getBooksByAuthorAndGenre(author, genre);
+        logger.info("The books retrieved for the author and genre "+author+" - " + genre);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/books/dueondate")
+    public ResponseEntity<Collection<Book>> getBooksDueOnDate(
+            @RequestParam("dueDate") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dueDate) {
+        Collection<Book> books = libraryService.getBooksDueOnDate(dueDate);
+        logger.info("The books retrieved by due date "+dueDate);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/bookavailabileDate")
+    public ResponseEntity<LocalDate> checkAvailability(
+            @RequestParam Long bookId) {
+        LocalDate avlDate = libraryService.checkAvailability(bookId);
+        if(avlDate == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(avlDate, HttpStatus.OK);
+        }
+    }
 }
